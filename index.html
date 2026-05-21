@@ -1042,7 +1042,7 @@
     body.hero-hidden .pulse-hero{transform:translateY(-100%);opacity:0;pointer-events:none;}
     body.hero-hidden .content-offset{padding-top:calc(var(--nav-h)+20px);}
     @media(max-width:1000px){
-      .pulse-hero{display:none;}
+      body.hero-hidden .pulse-hero{transform:none;opacity:1;pointer-events:auto;}
       .content-offset{padding-top:calc(var(--nav-h)+20px);}
       body.hero-hidden .content-offset{padding-top:calc(var(--nav-h)+20px);}
       .xv-nav-pill{opacity:1;transform:none;pointer-events:auto;transition:none;}
