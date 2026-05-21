@@ -76,6 +76,7 @@
       line-height: 1.6;
       min-height: 100vh;
       transition: background 0.25s, color 0.25s;
+      overflow-x: hidden;
     }
 
     body::before {
@@ -752,6 +753,7 @@
       margin: 0;
       min-width: 0;
       overflow-x: auto;
+      word-break: break-all;
     }
 
     .code-loading {
@@ -890,11 +892,23 @@
 
     /* ── Responsive: tablet (≤768px) ──────────────────────────────────── */
     @media (max-width: 768px) {
+      .pulse-hero {
+        height: auto;
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .hero-title {
+        font-size: 17px;
+      }
+
       .filter-bar {
         height: auto;
         flex-wrap: wrap;
         padding: 8px 14px;
         gap: 6px;
+        overflow-x: hidden;
       }
 
       .filter-spacer {
@@ -952,6 +966,7 @@
         flex-wrap: wrap;
         padding: 8px 12px;
         gap: 6px;
+        overflow-x: hidden;
       }
 
       .filter-pill {
