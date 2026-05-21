@@ -329,15 +329,8 @@
       opacity: .8;
     }
 
-    @media (max-width: 900px) {
-      .nav-links {
-        display: none;
-      }
-
-      .hamburger {
-        display: flex;
-      }
-    }
+    body.nav-compact .nav-links { display: none; }
+    body.nav-compact .hamburger { display: flex; }
 
     /* ── Page wrap ─────────────────────────────────────────────────────── */
     .page-wrap {
@@ -364,7 +357,6 @@
       justify-content: space-between;
       gap: 16px;
       height: var(--topbar-h);
-      transition: transform .35s cubic-bezier(.4,0,.2,1),opacity .3s ease;
     }
 
     .hero-left {
@@ -1040,13 +1032,12 @@
     .xv-pill-accent{color:var(--accent);}
     .xv-pill-text{color:var(--text);}
     .xv-pill-tagline{font-family:'Exo 2',sans-serif;font-weight:400;font-size:8px;color:var(--muted);letter-spacing:1.5px;}
-    body.hero-hidden .pulse-hero{transform:translateY(-100%);opacity:0;pointer-events:none;}
-    body.hero-hidden .content-offset{padding-top:calc(var(--nav-h)+20px);}
-    @media(max-width:1024px){
-      body.hero-hidden .pulse-hero{transform:none;opacity:1;pointer-events:auto;}
-      .content-offset{padding-top:calc(var(--nav-h)+20px);}
-      body.hero-hidden .content-offset{padding-top:calc(var(--nav-h)+20px);}
+    @media(max-width:1000px){
       .xv-nav-pill{opacity:1;transform:none;pointer-events:auto;transition:none;}
+    }
+    @media(max-width:640px){
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
     }
   </style>
 </head>
@@ -1534,6 +1525,7 @@
 
     // ── Init ──────────────────────────────────────────────────────────────────────
     loadManifest();
+    (function(){var pill=document.getElementById('xv-nav-pill'),links=document.querySelector('.nav-links'),toggle=document.querySelector('.theme-toggle'),G=20;function check(){if(!links)return;document.body.classList.remove('nav-compact');links.style.visibility='hidden';var lr=links.getBoundingClientRect(),pr=pill?pill.getBoundingClientRect().right:60,tl=toggle?toggle.getBoundingClientRect().left:window.innerWidth-60;links.style.visibility='';document.body.classList.toggle('nav-compact',(pr+G>lr.left)||(lr.right+G>tl));}check();window.addEventListener('resize',check);})();
   </script>
 </body>
 
