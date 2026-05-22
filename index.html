@@ -1441,16 +1441,6 @@
         }
       });
     }
-      }).catch(function () {
-        var pre = document.getElementById('code-' + idx);
-        if (pre) {
-          var range = document.createRange();
-          range.selectNodeContents(pre);
-          window.getSelection().removeAllRanges();
-          window.getSelection().addRange(range);
-        }
-      });
-    }
 
     // ── Error state ───────────────────────────────────────────────────────────────
     function showError() {
