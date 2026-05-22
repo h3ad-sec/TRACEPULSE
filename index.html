@@ -522,6 +522,28 @@
       border: 1px solid rgba(245, 158, 11, 0.25);
     }
 
+    .platform-badge.pb-kql   { color: #4d94ff; background: rgba(77,148,255,0.10); border-color: rgba(77,148,255,0.25); }
+    .platform-badge.pb-sigma { color: #a855f7; background: rgba(168,85,247,0.10); border-color: rgba(168,85,247,0.25); }
+    .platform-badge.pb-xql   { color: #f59e0b; background: rgba(245,158,11,0.10); border-color: rgba(245,158,11,0.25); }
+
+    .platform-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+    .pt-btn {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.14s;
+    }
+    .pt-btn:hover { color: var(--text); border-color: var(--muted); }
+    .pt-btn.pt-xql.active   { color: #f59e0b; border-color: #f59e0b; background: rgba(245,158,11,0.08); }
+    .pt-btn.pt-kql.active   { color: #4d94ff; border-color: #4d94ff; background: rgba(77,148,255,0.08); }
+    .pt-btn.pt-sigma.active { color: #a855f7; border-color: #a855f7; background: rgba(168,85,247,0.08); }
+
     /* Title row */
     .card-title {
       font-family: 'Exo 2', sans-serif;
@@ -1145,10 +1167,16 @@
       return 'badge-kql';
     }
 
+    function platformBadgeHtml(p, verifiedArr) {
+      var v = Array.isArray(verifiedArr) && verifiedArr.indexOf(p.toLowerCase()) !== -1;
+      return '<span class="platform-badge pb-' + p.toLowerCase() + '">' + p.toUpperCase() + (v ? ' ✓' : '') + '</span>';
+    }
+
     // ── Build card — threat context layout ────────────────────────────────────────
     function buildCard(entry, idx) {
-      var platform = (entry.platform || 'kql').toLowerCase();
-      var badgeClass = platformBadgeClass(platform);
+      var platformsArr = Array.isArray(entry.platforms) ? entry.platforms : (entry.platform ? [entry.platform] : ['kql']);
+      var verified = entry.verified || [];
+      var platformBadges = platformsArr.map(function(p) { return platformBadgeHtml(p, verified); }).join('');
       var title = escapeHtml(entry.title || 'Untitled Pack');
       var desc = escapeHtml(entry.description || '');
       var threat = entry.threat ? escapeHtml(entry.threat) : '';
@@ -1157,10 +1185,8 @@
 
       var html = '<div class="query-card" id="card-' + idx + '">';
 
-      // Platform badge top-right
-      html += '<div class="card-header">'
-        + '<span class="platform-badge ' + badgeClass + '">' + platform.toUpperCase() + '</span>'
-        + '</div>';
+      // Platform badges top-right
+      html += '<div class="card-header">' + platformBadges + '</div>';
 
       // Title
       html += '<div class="card-title">' + title + '</div>';
@@ -1186,6 +1212,7 @@
 
       // Expanded section
       html += '<div class="query-expanded" id="expanded-' + idx + '">'
+        + '<div id="ptabs-' + idx + '"></div>'
         + '<div class="code-block"><pre id="code-' + idx + '"><span class="code-loading">FETCHING QUERY...</span></pre></div>'
         + '<div class="expanded-actions">'
         + '<button class="btn-hide" onclick="toggleView(' + idx + ')">&#x25B2; HIDE</button>'
@@ -1224,7 +1251,8 @@
     // ── Filter logic ──────────────────────────────────────────────────────────────
     function getFiltered() {
       return allQueries.filter(function (q) {
-        var matchPlatform = activeFilter === 'all' || (q.platform || '').toLowerCase() === activeFilter;
+        var qPlatforms = Array.isArray(q.platforms) ? q.platforms : (q.platform ? [q.platform] : []);
+        var matchPlatform = activeFilter === 'all' || qPlatforms.map(function(p){return p.toLowerCase();}).indexOf(activeFilter) !== -1;
         if (!matchPlatform) return false;
         if (!searchTerm) return true;
         var haystack = [
@@ -1232,7 +1260,7 @@
           q.description || '',
           q.threat || '',
           q.cve || '',
-          q.platform || ''
+          qPlatforms.join(' ')
         ].join(' ').toLowerCase();
         return haystack.indexOf(searchTerm) !== -1;
       });
@@ -1258,7 +1286,6 @@
 
       var isOpen = expanded.classList.contains('open');
 
-      // Close all open cards
       document.querySelectorAll('.query-expanded.open').forEach(function (el) {
         el.classList.remove('open');
       });
@@ -1270,12 +1297,16 @@
       var entry = allQueries.find(function (q) { return q._idx === idx; });
       if (!entry) return;
 
+      if (entry._queries !== undefined) {
+        renderPlatformTabs(idx, Object.keys(entry._queries), entry._activePlatform);
+        renderQueryForPlatform(idx);
+        return;
+      }
       if (entry._queryBody !== undefined) {
         renderQueryBody(idx, entry._queryBody);
         return;
       }
 
-      // Lazy fetch YAML
       var fileUrl = RAW_BASE + entry.file;
       fetch(fileUrl)
         .then(function (r) {
@@ -1283,9 +1314,18 @@
           return r.text();
         })
         .then(function (yaml) {
-          var body = parseQueryFromYaml(yaml);
-          entry._queryBody = body || '# (no query field found)';
-          renderQueryBody(idx, entry._queryBody);
+          var multiQueries = parsePlatformQueriesFromYaml(yaml);
+          var platforms = Object.keys(multiQueries);
+          if (platforms.length > 0) {
+            entry._queries = multiQueries;
+            entry._activePlatform = platforms[0];
+            renderPlatformTabs(idx, platforms, platforms[0]);
+            renderQueryForPlatform(idx);
+          } else {
+            var body = parseQueryFromYaml(yaml);
+            entry._queryBody = body || '# (no query field found)';
+            renderQueryBody(idx, entry._queryBody);
+          }
         })
         .catch(function (err) {
           entry._queryBody = null;
@@ -1299,16 +1339,108 @@
       if (pre) pre.textContent = body;
     }
 
+    // ── Multi-platform YAML parser ────────────────────────────────────────────────
+    function parsePlatformQueriesFromYaml(yaml) {
+      var lines = yaml.split('\n');
+      var queries = {};
+      var inQueriesBlock = false;
+      var currentPlatform = null;
+      var currentLines = [];
+      var contentIndent = -1;
+      var keyIndent = -1;
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        if (!inQueriesBlock) {
+          if (/^queries\s*:\s*$/.test(line)) { inQueriesBlock = true; continue; }
+          continue;
+        }
+        if (line.trim() === '') { if (currentPlatform !== null) currentLines.push(''); continue; }
+        var indentLen = line.match(/^(\s*)/)[1].length;
+        if (keyIndent === -1) keyIndent = indentLen;
+        if (indentLen === keyIndent) {
+          var pm = line.match(/^\s*(xql|kql|spl|sigma)\s*:\s*[|>]/i);
+          if (pm) {
+            if (currentPlatform !== null) {
+              while (currentLines.length && currentLines[currentLines.length - 1].trim() === '') currentLines.pop();
+              queries[currentPlatform] = currentLines.join('\n');
+            }
+            currentPlatform = pm[1].toLowerCase();
+            currentLines = [];
+            contentIndent = -1;
+            continue;
+          }
+          if (currentPlatform !== null) {
+            while (currentLines.length && currentLines[currentLines.length - 1].trim() === '') currentLines.pop();
+            queries[currentPlatform] = currentLines.join('\n');
+          }
+          break;
+        }
+        if (currentPlatform !== null && indentLen > keyIndent) {
+          if (contentIndent === -1) contentIndent = indentLen;
+          currentLines.push(line.slice(contentIndent));
+        }
+      }
+      if (currentPlatform !== null && currentLines.length > 0) {
+        while (currentLines.length && currentLines[currentLines.length - 1].trim() === '') currentLines.pop();
+        queries[currentPlatform] = currentLines.join('\n');
+      }
+      return queries;
+    }
+
+    function renderPlatformTabs(idx, platforms, active) {
+      var tabsEl = document.getElementById('ptabs-' + idx);
+      if (!tabsEl || !platforms || platforms.length < 2) return;
+      var entry = allQueries.find(function (q) { return q._idx === idx; });
+      var verified = (entry && entry.verified) ? entry.verified : [];
+      var html = '<div class="platform-tabs">';
+      for (var i = 0; i < platforms.length; i++) {
+        var p = platforms[i];
+        var isVerified = verified.indexOf(p) !== -1;
+        html += '<button class="pt-btn pt-' + p + (p === active ? ' active' : '') + '" onclick="switchPlatform(' + idx + ',\'' + p + '\')">'+p.toUpperCase()+(isVerified ? ' ✓' : '')+'</button>';
+      }
+      html += '</div>';
+      tabsEl.innerHTML = html;
+    }
+
+    function switchPlatform(idx, platform) {
+      var entry = allQueries.find(function (q) { return q._idx === idx; });
+      if (!entry || !entry._queries) return;
+      entry._activePlatform = platform;
+      renderPlatformTabs(idx, Object.keys(entry._queries), platform);
+      renderQueryForPlatform(idx);
+    }
+
+    function renderQueryForPlatform(idx) {
+      var entry = allQueries.find(function (q) { return q._idx === idx; });
+      if (!entry || !entry._queries) return;
+      var body = entry._queries[entry._activePlatform] || '# (no query for this platform)';
+      renderQueryBody(idx, body);
+    }
+
     // ── Copy query ────────────────────────────────────────────────────────────────
     function copyQuery(idx) {
       var entry = allQueries.find(function (q) { return q._idx === idx; });
-      if (!entry || !entry._queryBody) return;
-      navigator.clipboard.writeText(entry._queryBody).then(function () {
+      if (!entry) return;
+      var body = entry._queries
+        ? (entry._queries[entry._activePlatform] || '')
+        : (entry._queryBody || '');
+      if (!body) return;
+      navigator.clipboard.writeText(body).then(function () {
         var btn = document.getElementById('copy-' + idx);
         if (btn) {
           btn.textContent = 'COPIED ✓';
           setTimeout(function () { btn.textContent = 'COPY QUERY'; }, 1800);
         }
+      }).catch(function () {
+        var pre = document.getElementById('code-' + idx);
+        if (pre) {
+          var range = document.createRange();
+          range.selectNodeContents(pre);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+        }
+      });
+    }
       }).catch(function () {
         var pre = document.getElementById('code-' + idx);
         if (pre) {
