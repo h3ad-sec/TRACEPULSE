@@ -31,7 +31,6 @@
       --status-partial: #f59e0b;
       --status-soon: #2d3748;
       --nav-h: 48px;
-      --topbar-h: 70px;
       --filterbar-h: 48px;
       --mono: 'Share Tech Mono', monospace;
     }
@@ -342,106 +341,10 @@
       flex-direction: column;
     }
 
-    /* ── Hero strip (fixed) ────────────────────────────────────────────── */
-    .pulse-hero {
-      position: fixed;
-      top: var(--nav-h);
-      left: 0;
-      right: 0;
-      z-index: 50;
-      background: var(--panel-alt);
-      border-bottom: 1px solid var(--border);
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      height: var(--topbar-h);
-    }
-
-    .hero-left {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .hero-breadcrumb {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
-      color: var(--muted);
-      letter-spacing: 0.06em;
-      margin-bottom: 3px;
-    }
-
-    .hero-breadcrumb a {
-      color: var(--muted);
-    }
-
-    .hero-breadcrumb a:hover {
-      color: var(--accent);
-      opacity: 1;
-    }
-
-    .hero-breadcrumb span {
-      color: var(--accent);
-      opacity: 0.6;
-      margin: 0 5px;
-    }
-
-    .hero-title-row {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-    }
-
-    .hero-title {
-      font-family: 'Exo 2', sans-serif;
-      font-weight: 700;
-      font-size: 20px;
-      color: var(--accent);
-      letter-spacing: 0.14em;
-      line-height: 1;
-    }
-
-    .hero-tagline {
-      font-family: 'Exo 2', sans-serif;
-      font-weight: 300;
-      font-size: 9px;
-      color: var(--muted);
-      letter-spacing: 0.14em;
-    }
-
-    .hero-right {
-      display: flex;
-      align-items: center;
-    }
-
-    .pulse-badge {
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
-      background: rgba(0, 212, 255, 0.1);
-      border: 1px solid rgba(0, 212, 255, 0.25);
-      padding: 5px 14px;
-      border-radius: 3px;
-      letter-spacing: 0.12em;
-    }
-
-    body.light .pulse-badge {
-      background: rgba(2, 132, 199, 0.07);
-      border-color: rgba(2, 132, 199, 0.3);
-    }
-
-    /* ── Content offset for fixed hero ────────────────────────────────── */
-    .content-offset {
-      height: calc(var(--nav-h) + var(--topbar-h));
-      flex-shrink: 0;
-    }
-
     /* ── Filter bar ────────────────────────────────────────────────────── */
     .filter-bar {
       position: sticky;
-      top: calc(var(--nav-h) + var(--topbar-h));
+      top: var(--nav-h);
       z-index: 40;
       background: var(--panel);
       border-bottom: 1px solid var(--border);
@@ -886,17 +789,6 @@
 
     /* ── Responsive: tablet (≤768px) ──────────────────────────────────── */
     @media (max-width: 768px) {
-      .pulse-hero {
-        height: auto;
-        padding: 10px 14px;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-
-      .hero-title {
-        font-size: 17px;
-      }
-
       .filter-bar {
         height: auto;
         flex-wrap: wrap;
@@ -921,39 +813,6 @@
 
     /* ── Responsive: mobile (≤480px) ──────────────────────────────────── */
     @media (max-width: 480px) {
-      :root {
-        --topbar-h: auto;
-      }
-
-      .pulse-hero {
-        position: static;
-        height: auto;
-        padding: 10px 12px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-      }
-
-      .content-offset {
-        height: var(--nav-h);
-      }
-
-      .hero-breadcrumb {
-        font-size: 9px;
-      }
-
-      .hero-title {
-        font-size: 16px;
-      }
-
-      .hero-tagline {
-        font-size: 8px;
-      }
-
-      .pulse-badge {
-        display: none;
-      }
-
       .filter-bar {
         position: static;
         height: auto;
@@ -1161,29 +1020,6 @@
 
   <!-- ── Page wrap ───────────────────────────────────────────────────────── -->
   <div class="page-wrap">
-
-    <!-- ── Fixed hero strip ────────────────────────────────────────────── -->
-    <div class="pulse-hero">
-      <div class="hero-left">
-        <div class="hero-breadcrumb">
-          <a href="https://h3ad-sec.github.io" target="_blank" rel="noopener">H3AD-SEC</a>
-          <span>›</span>
-          <a href="https://h3ad-sec.github.io/H3AD-HUNT/" target="_blank" rel="noopener">H3AD-HUNT</a>
-          <span>›</span>
-          <a href="https://h3ad-sec.github.io/TRACEPULSE/">TRACEPULSE</a>
-        </div>
-        <div class="hero-title-row">
-          <span class="hero-title">TRACEPULSE</span>
-          <span class="hero-tagline">THREAT QUERY PACKS</span>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="pulse-badge">PULSE</div>
-      </div>
-    </div>
-
-    <!-- Spacer to push content below fixed hero -->
-    <div class="content-offset"></div>
 
     <!-- ── Filter bar ─────────────────────────────────────────────────── -->
     <div class="filter-bar">
