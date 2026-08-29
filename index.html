@@ -23,7 +23,7 @@
 
   <meta name="theme-color" content="#080c14" />
   <link rel="icon" href="https://h3ad-sec.github.io/fevicon.png?v=2026" type="image/png" />
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script type="application/ld+json">
   {
@@ -70,6 +70,8 @@
       --nav-h: 48px;
       --filterbar-h: 48px;
       --mono: 'Share Tech Mono', monospace;
+      --ui: 'IBM Plex Sans', sans-serif;
+      --fs-xs: 11px;
     }
 
     body.light {
@@ -845,7 +847,7 @@
 
     /* ── Footer ────────────────────────────────────────────────────────── */
     .footer-credit-row { display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; }
-    .footer-credit-pill { display:inline-flex; flex-wrap:nowrap; align-items:center; gap:6px; padding:4px 12px; border:1px solid var(--border); border-radius:999px; text-decoration:none; font-family:'Exo 2',sans-serif; font-weight:500; font-size:0.65rem; white-space:nowrap; transition:border-color .15s; }
+    .footer-credit-pill { display:inline-flex; flex-wrap:nowrap; align-items:center; gap:6px; padding:4px 12px; border:1px solid var(--border); border-radius:999px; text-decoration:none; font-family:'Exo 2',sans-serif; font-weight:500; font-size:var(--fs-xs); white-space:nowrap; transition:border-color .15s; }
     .footer-credit-pill:hover { border-color:var(--accent); }
     .footer-credit-pill .credit-tool { font-weight:700; letter-spacing:2px; }
     .footer-credit-pill .credit-by { color:var(--muted); }
@@ -859,8 +861,8 @@
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 0.5rem 1.5rem;
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 10px;
+      font-family: var(--ui);
+      font-size: var(--fs-xs);
       color: var(--muted);
       letter-spacing: 0.08em;
     }
