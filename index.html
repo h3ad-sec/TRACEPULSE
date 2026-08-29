@@ -123,6 +123,9 @@
       min-height: 100vh;
       transition: background 0.25s, color 0.25s;
       overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
     }
 
     body::before {
@@ -383,9 +386,10 @@
       position: relative;
       z-index: 1;
       padding-top: var(--nav-h);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      flex: 1 0 auto;
+      width: 100%;
     }
 
     /* ── Filter bar ────────────────────────────────────────────────────── */
@@ -865,6 +869,7 @@
       font-size: var(--fs-xs);
       color: var(--muted);
       letter-spacing: 0.08em;
+      flex-shrink: 0;
     }
     .footer-left { color: var(--muted); }
     .footer-right { color: var(--muted); text-transform: uppercase; opacity: 0.85; }
@@ -873,6 +878,11 @@
       .pulse-footer{flex-direction:column;justify-content:center;text-align:center;gap:0.6rem;}
       .footer-credit-row{justify-content:center;}
     }
+
+    /* Footer color drift fix — align with IOC-VERDIKT ground-truth palette */
+    .footer-left,.footer-right,.footer-credit-pill .credit-by{color:#8b949e;}
+    body.light .footer-left,body.light .footer-right,body.light .footer-credit-pill .credit-by{color:#2E343B;}
+    body.light .footer-credit-pill .credit-name{color:#0A6EA8;}
 
     /* ── Responsive: tablet (≤768px) ──────────────────────────────────── */
     @media (max-width: 768px) {
@@ -1116,20 +1126,20 @@
       </div>
     </div>
 
-    <!-- ── Footer ────────────────────────────────────────────────────── -->
-    <footer class="pulse-footer">
-      <span class="footer-left">H3AD-SEC © 2026 &nbsp;|&nbsp; TRACEPULSE</span>
-      <span class="footer-right">THREAT QUERY PACKS</span>
-      <div class="footer-credit-row">
-        <a class="footer-credit-pill" href="https://www.linkedin.com/in/hrushikesh-badgujar/" target="_blank" rel="noopener" title="Connect on LinkedIn">
-          <span class="credit-tool"><span class="xv-pill-accent">TRACE</span><span class="xv-pill-text">PULSE</span></span>
-          <span class="credit-by">created by</span>
-          <span class="credit-name">H3AD</span>
-        </a>
-      </div>
-  </footer>
-
   </div><!-- /page-wrap -->
+
+  <!-- ── Footer ────────────────────────────────────────────────────── -->
+  <footer class="pulse-footer">
+    <span class="footer-left">H3AD-SEC © 2026 &nbsp;|&nbsp; TRACEPULSE</span>
+    <span class="footer-right">THREAT QUERY PACKS</span>
+    <div class="footer-credit-row">
+      <a class="footer-credit-pill" href="https://www.linkedin.com/in/hrushikesh-badgujar/" target="_blank" rel="noopener" title="Connect on LinkedIn">
+        <span class="credit-tool"><span class="xv-pill-accent">TRACE</span><span class="xv-pill-text">PULSE</span></span>
+        <span class="credit-by">created by</span>
+        <span class="credit-name">H3AD</span>
+      </a>
+    </div>
+  </footer>
 
   <script>
     // ── Theme ─────────────────────────────────────────────────────────────────────
